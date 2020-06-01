@@ -56,7 +56,6 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: config-volume
-          mountPath: /etc/mumble
           configMap:
             name: {{ include "mumble.fullname" . }}
             items:
