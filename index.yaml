@@ -3,12 +3,12 @@ entries:
   mumble:
   - apiVersion: v2
     appVersion: 1.3.0
-    created: "2020-06-01T05:48:41.0309817-07:00"
+    created: "2020-06-01T05:58:01.546266651-07:00"
     description: A low latency voice server
-    digest: 37b699967a542f103492777cde981565da80d51bb6c56d7f24261f388d085cfe
+    digest: d084d350aaf73ddee0f85d453780dfd4f2778536831bd4665e67584035536df5
     name: mumble
     type: application
     urls:
     - mumble-1.3.0.tgz
     version: 1.3.0
-generated: "2020-06-01T05:48:41.0302128-07:00"
+generated: "2020-06-01T05:58:01.545417251-07:00"
