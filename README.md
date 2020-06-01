@@ -5,3 +5,9 @@ These are largely designed for personal use, so may be lacking the options
 necessary to adapt them to all deployment environments. If you wish to use one
 of these charts, but it does not support your environment feel free to open an
 issue or PR with the desired changes.
+
+## Add Chart Repository
+```
+helm repo add r-bar https://r-bar.github.io/helm-charts
+helm repo update
+```
