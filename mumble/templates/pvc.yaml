@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "mumble.fullname" . }}
+  labels:
+    {{- include "mumble.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # many cloud block storage backends only support values specified in
+      # whole gigabytes
+      storage: 1Gi
