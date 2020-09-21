@@ -12,6 +12,12 @@ run:
     - -c
     - |
       set -e
+
+      echo Linting...
       helm lint ((chart-path))
+
+      echo Validating resources with default values...
       helm template release-name ((chart-path)) \
         | kubectl apply -f - --dry-run
+
+      echo 'Success!'
