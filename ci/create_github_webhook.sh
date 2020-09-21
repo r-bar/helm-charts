@@ -4,7 +4,7 @@ OWNER="r-bar"
 REPO="helm-charts"
 CI_ENDPOINT="https://ci.barth.tech"
 TEAM="main"
-PIPELINE="helm-charts"
+PIPELINE="helm-charts-ci"
 WEBHOOK_TOKEN="push"
 RESOURCE="repository"
 
