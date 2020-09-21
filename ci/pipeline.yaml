@@ -17,6 +17,9 @@ jobs:
         #input_mapping: {repository: repository}
         vars:
           chart-path: repository/bitwarden
+          namespace: ((default-token.namespace))
+          token: ((default-token.token))
+          certificate_authority_data: ((default-token."ca.crt"))
   - name: mumble
     plan:
       - get: repository
@@ -26,3 +29,6 @@ jobs:
         #input_mapping: {repository: repository}
         vars:
           chart-path: repository/mumble
+          namespace: ((default-token.namespace))
+          token: ((default-token.token))
+          certificate_authority_data: ((default-token."ca.crt"))
