@@ -1,0 +1,26 @@
+---
+resources:
+  - name: repository
+    type: git
+    source:
+      uri: https://github.com/r-bar/helm-charts.git
+
+jobs:
+  - name: bitwarden
+    plan:
+      - get: repository
+        trigger: true
+      - task: test-bitwarden
+        file: repository/ci/helm-test-task.yaml
+        #input_mapping: {repository: repository}
+        vars:
+          chart-path: repository/bitwarden
+  - name: mumble
+    plan:
+      - get: repository
+        trigger: true
+      - task: test-mumble
+        file: repository/ci/helm-test-task.yaml
+        #input_mapping: {repository: repository}
+        vars:
+          chart-path: repository/mumble
