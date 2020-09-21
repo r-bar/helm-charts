@@ -13,5 +13,5 @@ run:
     - |
       set -e
       helm lint ((chart-path))
-      helm template release-name ((chart-path))
+      helm template release-name ((chart-path)) \
         | kubectl apply -f - --dry-run
