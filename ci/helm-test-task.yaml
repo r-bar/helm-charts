@@ -16,10 +16,9 @@ run:
       echo Linting...
       helm lint ((chart-path))
 
-      mkdir -p /run/secrets/kubernetes.io/serviceaccount
-
       # setup auth for kubectl command
       # required for --dry-run=client with kubectl <=1.18
+      mkdir -p /run/secrets/kubernetes.io/serviceaccount
       echo "((namespace))" > /run/secrets/kubernetes.io/serviceaccount/namespace
       echo "((certificate_authority_data))" > /run/secrets/kubernetes.io/serviceaccount/ca.crt
       echo "((token))" > /run/secrets/kubernetes.io/serviceaccount/token

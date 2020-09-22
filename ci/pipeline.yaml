@@ -31,4 +31,5 @@ jobs:
           chart-path: repository/mumble
           namespace: ((default-token.namespace))
           token: ((default-token.token))
-          certificate_authority_data: ((default-token."ca.crt"))
+          #certificate_authority_data: ((default-token."ca.crt"))
+          certificate_authority_data: ""
