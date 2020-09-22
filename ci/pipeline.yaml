@@ -16,10 +16,10 @@ jobs:
         file: repository/ci/helm-test-task.yaml
         vars:
           chart-path: repository/bitwarden
-          namespace: ((k8s-token.namespace))
-          token: ((k8s-token.token))
-          certificate-authority-data: ((k8s-token.certificate_authority_data))
-          cluster-url: ((cluster-url))
+          namespace: ((k8s-cluster.namespace))
+          token: ((k8s-cluster.token))
+          certificate-authority-data: ((k8s-cluster.certificate-authority-data))
+          cluster-url: ((k8s-cluster.url))
           #certificate_authority_data: ""
   - name: mumble
     plan:
@@ -29,7 +29,7 @@ jobs:
         file: repository/ci/helm-test-task.yaml
         vars:
           chart-path: repository/mumble
-          namespace: ((k8s-token.namespace))
-          token: ((k8s-token.token))
-          certificate-authority-data: ((k8s-token.certificate_authority_data))
-          cluster-url: ((cluster-url))
+          namespace: ((k8s-cluster.namespace))
+          token: ((k8s-cluster.token))
+          certificate-authority-data: ((k8s-cluster.certificate-authority-data))
+          cluster-url: ((k8s-cluster.url))
