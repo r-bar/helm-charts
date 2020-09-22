@@ -14,12 +14,12 @@ jobs:
         trigger: true
       - task: test-bitwarden
         file: repository/ci/helm-test-task.yaml
-        #input_mapping: {repository: repository}
         vars:
           chart-path: repository/bitwarden
           namespace: ((k8s-token.namespace))
           token: ((k8s-token.token))
-          certificate_authority_data: (("k8s-token"."ca.crt"))
+          certificate-authority-data: ((k8s-token.certificate_authority_data))
+          cluster-url: ((cluster-url))
           #certificate_authority_data: ""
   - name: mumble
     plan:
@@ -27,10 +27,9 @@ jobs:
         trigger: true
       - task: test-mumble
         file: repository/ci/helm-test-task.yaml
-        #input_mapping: {repository: repository}
         vars:
           chart-path: repository/mumble
           namespace: ((k8s-token.namespace))
           token: ((k8s-token.token))
-          #certificate_authority_data: ((k8s-token."ca.crt"))
-          certificate_authority_data: ""
+          certificate-authority-data: ((k8s-token.certificate_authority_data))
+          cluster-url: ((cluster-url))
