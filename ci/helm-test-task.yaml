@@ -19,12 +19,11 @@ run:
       # setup auth for kubectl command
       # required for --dry-run=client with kubectl <=1.18
       echo "((certificate-authority-data))" > /tmp/ca.crt
-      echo "((token))" > /tmp/token
-      kubectl config set-cluster default --server ((cluster-url))
-      kubectl config set-credentials admin \
-        --client-certificate /tmp/ca.crt --client-key /tmp/token
+      kubectl config set-cluster default --server ((cluster-url)) --certificate-authority /tmp/ca.crt
+      kubectl config set-credentials admin --client-key ((token))
       kubectl config set-context default --cluster default --user admin --namespace ((namespace))
       kubectl config use-context default
+      kubectl version
 
       echo Validating resources with default values...
       helm template release-name ((chart-path)) \
