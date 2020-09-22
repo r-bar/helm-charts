@@ -19,7 +19,8 @@ jobs:
           chart-path: repository/bitwarden
           namespace: ((default-token.namespace))
           token: ((default-token.token))
-          certificate_authority_data: ((default-token."ca.crt"))
+          #certificate_authority_data: ((default-token."ca.crt"))
+          certificate_authority_data: ""
   - name: mumble
     plan:
       - get: repository
