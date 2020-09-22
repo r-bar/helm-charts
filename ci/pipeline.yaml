@@ -24,37 +24,49 @@ resources:
 jobs:
   - name: bitwarden
     plan:
+      - get: repository
+        trigger: true
       - put: build-status
-        params: {state: pending}
+        params:
+          state: pending
+          commit: repository
       - do:
-        - get: repository
-          trigger: true
-        - task: test-bitwarden
-          file: repository/ci/helm-test-task.yaml
-          vars:
-            chart-path: repository/bitwarden
-            namespace: ((k8s-cluster.namespace))
-            token: ((k8s-cluster.token))
-            certificate-authority-data: ((k8s-cluster.certificate-authority-data))
-            cluster-url: ((k8s-cluster.url))
+          - task: test-bitwarden
+            file: repository/ci/helm-test-task.yaml
+            vars:
+              chart-path: repository/bitwarden
+              namespace: ((k8s-cluster.namespace))
+              token: ((k8s-cluster.token))
+              certificate-authority-data: ((k8s-cluster.certificate-authority-data))
+              cluster-url: ((k8s-cluster.url))
         on_failure:
           put: build-status
-          params: {state: failure}
+          params:
+            state: failure
+            commit: repository
         on_error:
           put: build-status
-          params: {state: error}
-        on_about:
+          params:
+            state: error
+            commit: repository
+        on_abort:
           put: build-status
-          params: {state: error}
+          params:
+            state: error
+            commit: repository
       - put: build-status
-        params: {state: success}
+        params:
+          state: success
+          commit: repository
   - name: mumble
     plan:
+      - get: repository
+        trigger: true
       - put: build-status
-        params: {state: pending}
+        params:
+          state: pending
+          commit: repository
       - do:
-          - get: repository
-            trigger: true
           - task: test-mumble
             file: repository/ci/helm-test-task.yaml
             vars:
@@ -65,12 +77,20 @@ jobs:
               cluster-url: ((k8s-cluster.url))
         on_failure:
           put: build-status
-          params: {state: failure}
+          params:
+            state: failure
+            commit: repository
         on_error:
           put: build-status
-          params: {state: error}
-        on_about:
+          params:
+            state: error
+            commit: repository
+        on_abort:
           put: build-status
-          params: {state: error}
+          params:
+            state: error
+            commit: repository
       - put: build-status
-        params: {state: success}
+        params:
+          state: success
+          commit: repository
