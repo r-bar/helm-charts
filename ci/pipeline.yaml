@@ -1,4 +1,12 @@
 ---
+resource_types:
+  - name: github-status
+    type: docker-image
+    source:
+      repository: dpb587/github-status-resource
+      tag: master
+
+
 resources:
   - name: repository
     type: git
@@ -6,30 +14,63 @@ resources:
       uri: https://github.com/r-bar/helm-charts.git
     webhook_token: push
     check_every: 24h
+  - name: build-status
+    type: github-status
+    source:
+      repository: https://github.com/r-bar/helm-charts.git
+      access_token: ((github-access-token))
+
 
 jobs:
   - name: bitwarden
     plan:
-      - get: repository
-        trigger: true
-      - task: test-bitwarden
-        file: repository/ci/helm-test-task.yaml
-        vars:
-          chart-path: repository/bitwarden
-          namespace: ((k8s-cluster.namespace))
-          token: ((k8s-cluster.token))
-          certificate-authority-data: ((k8s-cluster.certificate-authority-data))
-          cluster-url: ((k8s-cluster.url))
-          #certificate_authority_data: ""
+      - put: build-status
+        params: {state: pending}
+      - do:
+        - get: repository
+          trigger: true
+        - task: test-bitwarden
+          file: repository/ci/helm-test-task.yaml
+          vars:
+            chart-path: repository/bitwarden
+            namespace: ((k8s-cluster.namespace))
+            token: ((k8s-cluster.token))
+            certificate-authority-data: ((k8s-cluster.certificate-authority-data))
+            cluster-url: ((k8s-cluster.url))
+        on_failure:
+          put: build-status
+          params: {state: failure}
+        on_error:
+          put: build-status
+          params: {state: error}
+        on_about:
+          put: build-status
+          params: {state: error}
+      - put: build-status
+        params: {state: success}
   - name: mumble
     plan:
-      - get: repository
-        trigger: true
-      - task: test-mumble
-        file: repository/ci/helm-test-task.yaml
-        vars:
-          chart-path: repository/mumble
-          namespace: ((k8s-cluster.namespace))
-          token: ((k8s-cluster.token))
-          certificate-authority-data: ((k8s-cluster.certificate-authority-data))
-          cluster-url: ((k8s-cluster.url))
+      - put: build-status
+        params: {state: pending}
+      - do:
+          - get: repository
+            trigger: true
+          - task: test-mumble
+            file: repository/ci/helm-test-task.yaml
+            vars:
+              chart-path: repository/mumble
+              namespace: ((k8s-cluster.namespace))
+              token: ((k8s-cluster.token))
+              certificate-authority-data: ((k8s-cluster.certificate-authority-data))
+              cluster-url: ((k8s-cluster.url))
+        on_failure:
+          put: build-status
+          params: {state: failure}
+        on_error:
+          put: build-status
+          params: {state: error}
+        on_about:
+          put: build-status
+          params: {state: error}
+      - put: build-status
+        params: {state: success}
