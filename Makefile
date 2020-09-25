@@ -15,4 +15,4 @@ index.yaml: ${ARCHIVES}
 
 
 ci/full-pipeline.yaml: ci/pipeline.yaml ${CHART_PIPLINES}
-	@python ci/merge-pipelines.py $^ | tee $@
+	@python3 ci/merge-pipelines.py $^ | tee $@
