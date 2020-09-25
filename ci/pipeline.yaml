@@ -50,8 +50,12 @@ resources:
 
 
 groups:
+  - name: setup
+    jobs: [update-pipeline]
   - name: bitwarden
     jobs: [bitwarden, bitwarden-release]
+  - name: mumble
+    jobs: [mumble]
 
 
 jobs:
