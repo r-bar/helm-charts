@@ -23,13 +23,22 @@ resources:
     webhook_token: ((webhook-token))
     check_every: 24h
 
-  - name: chart-repo
+  - name: bitwarden-chart
     icon: ship-wheel
     type: helm-chart
     source:
+      chart: bitwarden
       repository_url: https://registry.barth.tech/chartrepo/library
       username: ((registry.username))
       password: ((registry.password))
+
+  - name: bitwarden-release
+    icon: github
+    type: github-release
+    params:
+      owner: dani-garcia
+      repository: bitwarden_rs
+      access_token: ((github-access-token))
 
   - name: build-status
     type: github-status
@@ -54,6 +63,7 @@ jobs:
       - get: git-repo
         passed: [update-pipeline]
         trigger: true
+
       - put: build-status
         params:
           state: pending
@@ -63,7 +73,7 @@ jobs:
             file: git-repo/ci/helm-test-task.yaml
             input_mapping: {repository: git-repo}
             vars:
-              chart-path: /bitwarden
+              chart-path: bitwarden
               namespace: ((k8s-cluster.namespace))
               token: ((k8s-cluster.token))
               certificate-authority-data: ((k8s-cluster.certificate-authority-data))
@@ -83,6 +93,26 @@ jobs:
           state: success
           commit: git-repo
 
+  - name: bitwarden-release
+    plan:
+      - get: bitwarden-release
+        trigger: true
+      - get: git-repo
+      - task: bump-version
+        file: set-chart-version.yaml
+        input_mapping:
+          repository: git-repo
+          release: bitwarden-release
+        output_mapping:
+          repository: git-repo
+        vars:
+          chart-path: bitwarden
+          version: release/version
+      - put: git-repo
+        params:
+          repository: git-repo
+          tag: git-repo/ci/tag
+
   - name: mumble
     plan:
       - get: git-repo
@@ -97,11 +127,14 @@ jobs:
             file: git-repo/ci/helm-test-task.yaml
             input_mapping: {repository: git-repo}
             vars:
-              chart-path: git-repo/mumble
+              chart-path: /mumble
               namespace: ((k8s-cluster.namespace))
               token: ((k8s-cluster.token))
               certificate-authority-data: ((k8s-cluster.certificate-authority-data))
               cluster-url: ((k8s-cluster.url))
+          - put: chart-repo
+            params:
+              repository: git-repo/mumble
         on_failure: *on_failure
         on_error: *on_failure
         on_abort: *on_failure

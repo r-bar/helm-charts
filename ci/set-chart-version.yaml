@@ -1,0 +1,30 @@
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: alpine
+inputs:
+  - name: repository
+  - name: release
+outputs: [{name: repository}]
+run:
+  path: sh
+  args:
+    - -c
+    - |
+      set -e
+
+      VERSION="$(cat release/version)"
+
+      cd repository
+      apk add git
+
+      sed -i "s/^\(appVersion\|version\):.*/\1: $VERSION/" \
+        ((chart-path))/Chart.yaml
+
+      git diff
+      git commit repository/((chart-path))/Chart.yaml \
+        -m "((chart-path)): bump appVersion to $VERSION"
+
+      NAME="$(grep '^name:' ((chart-path))/Chart.yaml | sed 's/^name: \?\(.*\)/\1/')"
+      echo $NAME-$VERSION > ci/tag
