@@ -49,6 +49,11 @@ resources:
       access_token: ((github-access-token))
 
 
+groups:
+  - name: bitwarden
+    jobs: [bitwarden, bitwarden-release]
+
+
 jobs:
   - name: update-pipeline
     plan:
