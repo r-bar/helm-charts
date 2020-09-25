@@ -49,13 +49,13 @@ resources:
       access_token: ((github-access-token))
 
 
-groups:
-  - name: setup
-    jobs: [update-pipeline]
-  - name: bitwarden
-    jobs: [bitwarden, bitwarden-release]
-  - name: mumble
-    jobs: [mumble]
+#groups:
+#  - name: setup
+#    jobs: [update-pipeline]
+#  - name: bitwarden
+#    jobs: [bitwarden, bitwarden-release]
+#  - name: mumble
+#    jobs: [mumble]
 
 
 jobs:
