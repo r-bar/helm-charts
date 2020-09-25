@@ -53,7 +53,9 @@ jobs:
         config:
           platform: linux
           image_resource:
-            repository: alpine
+            type: registry-image
+            source:
+              repository: alpine
           inputs: [{name: git-repo}]
           outputs: [{name: git-repo}]
           run:
