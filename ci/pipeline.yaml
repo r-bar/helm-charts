@@ -116,6 +116,8 @@ jobs:
         vars:
           chart-path: bitwarden
           version: release/version
+          git-username: ((git-config.username))
+          git-email: ((git-config.email))
       - put: git-repo
         params:
           repository: git-repo

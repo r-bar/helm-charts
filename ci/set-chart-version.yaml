@@ -23,6 +23,8 @@ run:
         ((chart-path))/Chart.yaml
 
       git diff
+      git config user.email "((git-email))"
+      git config user.name "((git-username))"
       git commit -m "((chart-path)): bump appVersion to $VERSION" ((chart-path))/Chart.yaml
 
       NAME="$(grep '^name:' ((chart-path))/Chart.yaml | sed 's/^name: \?\(.*\)/\1/')"
