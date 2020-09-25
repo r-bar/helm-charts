@@ -20,6 +20,8 @@ resources:
     type: git
     source:
       uri: https://github.com/r-bar/helm-charts.git
+      branch: master
+      private_key: ((git-config.ssh-private-key))
     webhook_token: ((webhook-token))
     check_every: 24h
 
