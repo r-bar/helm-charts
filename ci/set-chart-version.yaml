@@ -23,8 +23,7 @@ run:
         ((chart-path))/Chart.yaml
 
       git diff
-      git commit repository/((chart-path))/Chart.yaml \
-        -m "((chart-path)): bump appVersion to $VERSION"
+      git commit -m "((chart-path)): bump appVersion to $VERSION" ((chart-path))/Chart.yaml
 
       NAME="$(grep '^name:' ((chart-path))/Chart.yaml | sed 's/^name: \?\(.*\)/\1/')"
       echo $NAME-$VERSION > ci/tag
