@@ -1,0 +1,76 @@
+---
+resources:
+  - name: bitwarden-chart
+    icon: ship-wheel
+    type: helm-chart
+    source:
+      chart: bitwarden
+      repository_url: https://registry.barth.tech/chartrepo/library
+      username: ((registry.username))
+      password: ((registry.password))
+
+  - name: bitwarden-release
+    icon: github
+    type: github-release
+    source:
+      owner: dani-garcia
+      repository: bitwarden_rs
+      access_token: ((github-access-token))
+
+jobs:
+  - name: bitwarden
+    plan:
+      - get: git-repo
+        passed: [update-pipeline]
+        trigger: true
+
+      - put: build-status
+        params:
+          state: pending
+          commit: git-repo
+      - do:
+          - task: test-bitwarden
+            file: git-repo/ci/helm-test-task.yaml
+            input_mapping: {repository: git-repo}
+            vars:
+              chart-path: bitwarden
+              namespace: ((k8s-cluster.namespace))
+              token: ((k8s-cluster.token))
+              certificate-authority-data: ((k8s-cluster.certificate-authority-data))
+              cluster-url: ((k8s-cluster.url))
+          - put: bitwarden-chart
+            params:
+              repository: git-repo/bitwarden
+        on_failure: &on_failure
+          put: build-status
+          params:
+            state: failure
+            commit: git-repo
+        on_error: *on_failure
+        on_abort: *on_failure
+      - put: build-status
+        params:
+          state: success
+          commit: git-repo
+
+  - name: bitwarden-release
+    plan:
+      - get: bitwarden-release
+        trigger: true
+      - get: git-repo
+      - task: bump-version
+        file: git-repo/ci/set-chart-version.yaml
+        input_mapping:
+          repository: git-repo
+          release: bitwarden-release
+        output_mapping: {repository: git-repo}
+        vars:
+          chart-path: bitwarden
+          version: release/version
+          git-username: ((git-config.username))
+          git-email: ((git-config.email))
+      - put: git-repo
+        params:
+          repository: git-repo
+          tag: git-repo/ci/tag
+
