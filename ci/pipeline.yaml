@@ -3,28 +3,40 @@ resource_types:
   - name: github-status
     type: docker-image
     source:
-      repository: dpb587/github-status-resource
-      tag: master
+      repository: registry.barth.tech/library/concourse_github_status
+      tag: latest
 
 
 resources:
+
   - name: repository
     type: git
     source:
       uri: https://github.com/r-bar/helm-charts.git
     webhook_token: push
     check_every: 24h
+
   - name: build-status
     type: github-status
     source:
-      repository: https://github.com/r-bar/helm-charts.git
+      owner: r-bar
+      repository: helm-charts
       access_token: ((github-access-token))
 
 
 jobs:
+  - name: update-pipeline
+    plan:
+      - get: repository
+        trigger: true
+
+      - set_pipeline: concourse-github-status
+        file: repository/ci/pipeline.yaml
+
   - name: bitwarden
     plan:
       - get: repository
+        passed: [update-pipeline]
         trigger: true
       - put: build-status
         params:
@@ -58,9 +70,11 @@ jobs:
         params:
           state: success
           commit: repository
+
   - name: mumble
     plan:
       - get: repository
+        passed: [update-pipeline]
         trigger: true
       - put: build-status
         params:
