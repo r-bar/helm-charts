@@ -6,18 +6,34 @@ resource_types:
       repository: registry.barth.tech/library/concourse_github_status
       tag: latest
 
+  - name: helm-chart
+    type: registry-image
+    source:
+      repository: jghiloni/helm-chart-resource
+      tag: v0.1.1
+
 
 resources:
 
-  - name: repository
+  - name: git-repo
+    icon: github
     type: git
     source:
       uri: https://github.com/r-bar/helm-charts.git
     webhook_token: push
     check_every: 24h
 
+  - name: chart-repo
+    icon: ship-wheel
+    type: helm-chart
+    source:
+      repository_url: https://registry.barth.tech/chartrepo/library
+      username: ((registry.username))
+      password: ((registry.password))
+
   - name: build-status
     type: github-status
+    icon: list-status
     source:
       owner: r-bar
       repository: helm-charts
@@ -27,64 +43,59 @@ resources:
 jobs:
   - name: update-pipeline
     plan:
-      - get: repository
+      - get: git-repo
         trigger: true
 
       - set_pipeline: helm-charts-ci
-        file: repository/ci/pipeline.yaml
+        file: git-repo/ci/pipeline.yaml
 
   - name: bitwarden
     plan:
-      - get: repository
+      - get: git-repo
         passed: [update-pipeline]
         trigger: true
       - put: build-status
         params:
           state: pending
-          commit: repository
+          commit: git-repo
       - do:
           - task: test-bitwarden
-            file: repository/ci/helm-test-task.yaml
+            file: git-repo/ci/helm-test-task.yaml
             vars:
-              chart-path: repository/bitwarden
+              chart-path: git-repo/bitwarden
               namespace: ((k8s-cluster.namespace))
               token: ((k8s-cluster.token))
               certificate-authority-data: ((k8s-cluster.certificate-authority-data))
               cluster-url: ((k8s-cluster.url))
-        on_failure:
+          - put: chart-repo
+            params:
+              repository: git-repo/bitwarden
+        on_failure: &on_failure
           put: build-status
           params:
             state: failure
-            commit: repository
-        on_error:
-          put: build-status
-          params:
-            state: error
-            commit: repository
-        on_abort:
-          put: build-status
-          params:
-            state: error
-            commit: repository
+            commit: git-repo
+        on_error: *on_failure
+        on_abort: *on_failure
       - put: build-status
         params:
           state: success
-          commit: repository
+          commit: git-repo
 
   - name: mumble
     plan:
-      - get: repository
+      - get: git-repo
         passed: [update-pipeline]
         trigger: true
       - put: build-status
         params:
           state: pending
-          commit: repository
+          commit: git-repo
       - do:
           - task: test-mumble
-            file: repository/ci/helm-test-task.yaml
+            file: git-repo/ci/helm-test-task.yaml
             vars:
-              chart-path: repository/mumble
+              chart-path: git-repo/mumble
               namespace: ((k8s-cluster.namespace))
               token: ((k8s-cluster.token))
               certificate-authority-data: ((k8s-cluster.certificate-authority-data))
@@ -93,18 +104,18 @@ jobs:
           put: build-status
           params:
             state: failure
-            commit: repository
+            commit: git-repo
         on_error:
           put: build-status
           params:
             state: error
-            commit: repository
+            commit: git-repo
         on_abort:
           put: build-status
           params:
             state: error
-            commit: repository
+            commit: git-repo
       - put: build-status
         params:
           state: success
-          commit: repository
+          commit: git-repo
