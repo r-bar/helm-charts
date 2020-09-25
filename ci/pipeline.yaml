@@ -64,7 +64,7 @@ jobs:
               - -c
               - |
                 set -e
-                apk add make python3 py3-yaml
+                apk add --no-progress make python3 py3-yaml
                 cd git-repo
                 make ci/full-pipeline.yaml
 
