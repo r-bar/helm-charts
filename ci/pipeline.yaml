@@ -30,7 +30,7 @@ jobs:
       - get: repository
         trigger: true
 
-      - set_pipeline: concourse-github-status
+      - set_pipeline: helm-charts-ci
         file: repository/ci/pipeline.yaml
 
   - name: bitwarden
