@@ -35,7 +35,7 @@ resources:
   - name: bitwarden-release
     icon: github
     type: github-release
-    params:
+    source:
       owner: dani-garcia
       repository: bitwarden_rs
       access_token: ((github-access-token))
@@ -78,7 +78,7 @@ jobs:
               token: ((k8s-cluster.token))
               certificate-authority-data: ((k8s-cluster.certificate-authority-data))
               cluster-url: ((k8s-cluster.url))
-          - put: chart-repo
+          - put: bitwarden-chart
             params:
               repository: git-repo/bitwarden
         on_failure: &on_failure
@@ -99,12 +99,11 @@ jobs:
         trigger: true
       - get: git-repo
       - task: bump-version
-        file: set-chart-version.yaml
+        file: git-repo/ci/set-chart-version.yaml
         input_mapping:
           repository: git-repo
           release: bitwarden-release
-        output_mapping:
-          repository: git-repo
+        output_mapping: {repository: git-repo}
         vars:
           chart-path: bitwarden
           version: release/version
@@ -127,14 +126,14 @@ jobs:
             file: git-repo/ci/helm-test-task.yaml
             input_mapping: {repository: git-repo}
             vars:
-              chart-path: /mumble
+              chart-path: mumble
               namespace: ((k8s-cluster.namespace))
               token: ((k8s-cluster.token))
               certificate-authority-data: ((k8s-cluster.certificate-authority-data))
               cluster-url: ((k8s-cluster.url))
-          - put: chart-repo
-            params:
-              repository: git-repo/mumble
+          #- put: chart-repo
+          #  params:
+          #    repository: git-repo/mumble
         on_failure: *on_failure
         on_error: *on_failure
         on_abort: *on_failure
