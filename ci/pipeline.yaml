@@ -63,7 +63,7 @@ jobs:
             file: git-repo/ci/helm-test-task.yaml
             input_mapping: {repository: git-repo}
             vars:
-              chart-path: git-repo/bitwarden
+              chart-path: /bitwarden
               namespace: ((k8s-cluster.namespace))
               token: ((k8s-cluster.token))
               certificate-authority-data: ((k8s-cluster.certificate-authority-data))

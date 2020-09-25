@@ -14,7 +14,7 @@ run:
       set -e
 
       echo Linting...
-      helm lint ((chart-path))
+      helm lint repository/((chart-path))
 
       # setup auth for kubectl command
       # required for --dry-run=client with kubectl <=1.18
@@ -26,7 +26,7 @@ run:
       kubectl version
 
       echo Validating resources with default values...
-      helm template release-name ((chart-path)) \
+      helm template release-name repository/((chart-path)) \
         | kubectl apply -f - --dry-run=client
 
       echo 'Success!'
