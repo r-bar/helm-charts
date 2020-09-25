@@ -42,6 +42,23 @@ resources:
       repository: bitwarden_rs
       access_token: ((github-access-token))
 
+  - name: mumble-chart
+    icon: ship-wheel
+    type: helm-chart
+    source:
+      chart: mumble
+      repository_url: https://registry.barth.tech/chartrepo/library
+      username: ((registry.username))
+      password: ((registry.password))
+
+  - name: mumble-release
+    icon: github
+    type: github-release
+    source:
+      owner: mumble-voip
+      repository: mumble
+      access_token: ((github-access-token))
+
   - name: build-status
     type: github-status
     icon: list-status
@@ -144,9 +161,9 @@ jobs:
               token: ((k8s-cluster.token))
               certificate-authority-data: ((k8s-cluster.certificate-authority-data))
               cluster-url: ((k8s-cluster.url))
-          #- put: chart-repo
-          #  params:
-          #    repository: git-repo/mumble
+          - put: mumble-chart
+            params:
+              repository: git-repo/mumble
         on_failure: *on_failure
         on_error: *on_failure
         on_abort: *on_failure
@@ -154,3 +171,25 @@ jobs:
         params:
           state: success
           commit: git-repo
+
+  - name: mumble-release
+    plan:
+      - get: mumble-release
+        trigger: true
+      - get: git-repo
+      - task: bump-version
+        file: git-repo/ci/set-chart-version.yaml
+        input_mapping:
+          repository: git-repo
+          release: mumble-release
+        output_mapping: {repository: git-repo}
+        vars:
+          chart-path: mumble
+          version: release/version
+          git-username: ((git-config.username))
+          git-email: ((git-config.email))
+      - put: git-repo
+        params:
+          repository: git-repo
+          tag: git-repo/ci/tag
+
