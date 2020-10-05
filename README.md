@@ -8,6 +8,6 @@ issue or PR with the desired changes.
 
 ## Add Chart Repository
 ```
-helm repo add r-bar https://r-bar.github.io/helm-charts
+helm repo add r-bar https://registry.barth.tech/chartrepo/library
 helm repo update
 ```
