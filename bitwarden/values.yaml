@@ -82,7 +82,7 @@ deployment:
   # See: https://www.github.com/dani-garcia/bitwarden_rs
   image:
     repository: bitwardenrs/server
-    tag: 1.16.1
+    tag: 1.20.0
     pullPolicy: IfNotPresent
   # Resources, etc, for the deployment pod
   resources: {}
